@@ -30,7 +30,7 @@ The following data types are used in the structure:
 | float  | Floating point (32-bit) |
 | uint64 | Unsigned 64-bit integer |
 
-There is a singular encrypted packet sent out by GT7. The packet is encypted in the Salsa20 stream cipher. The packets will only be sent from the console if there is a heartbeat sent from a device. Once the console receives a heartbeat, it then establishes a connection with the ESP8266/ESP32 and sends the data to the IP address that was used to send the heartbeat. The console will expect a heartbeat every 100 packets (around 1.6 seconds) or else the connection will cease.
+There is a singular encrypted packet sent out by GT7. The packet is encrypted in the Salsa20 stream cipher. The packets will only be sent from the console if there is a heartbeat sent from a device (in our case an ESP8266/ESP32). Once the console receives a heartbeat, it then establishes a connection with the ESP8266/ESP32 and sends the data to the IP address that was used to send the heartbeat. The console will expect a heartbeat every 100 packets (around 1.6 seconds) or else the connection will cease.
 
 ## The Packet: 
 
@@ -79,7 +79,7 @@ uint8 throttle; // Throttle (RANGE: 0 -> 255)
 uint8 brake; // Brake (RANGE: 0 -> 255)
 uint8 UNKNOWNBYTE1; // Padding byte
 float roadPlane[3]; // Banking of the road
-float roadPlaneDistance; // 
+float roadPlaneDistance; // Distance above or below the plane, e.g a dip in the road is negative, hill is positive.
 float wheelRPS[4]; // Revolutions per second of tyres in rads
 float tyresRadius[4]; // Radius of the tyre in meters
 float suspHeight[4]; // Suspension height of the car
@@ -111,10 +111,10 @@ Packet m_packet;
 
 These are the current additional functions needed to retrieve additional information not immediately present in the packet
 
-```C
-uint8_t getCurrentGearFromByte() // Using gears
-uint8_t getSuggestedGearFromByte() // Using gears
-uint8_t getPowertrainType() // Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
+```c#
+uint8 getCurrentGearFromByte() // Using gears
+uint8 getSuggestedGearFromByte() // Using gears
+uint8 getPowertrainType() // Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
 ```
 
 Here is how you can use them in your code:
