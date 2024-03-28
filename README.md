@@ -134,7 +134,7 @@ void loop()
 
 ```
 
-### Encryption 
+## Encryption 
 
 The packet is encrypted in the Salsa20 cipher stream with a 32 byte key and 8 byte nonce.
 
@@ -150,7 +150,7 @@ This key is 39 bytes long. Each character in the string has to be converted into
 
 The beginnings of the 8 byte nonce can be located at position \[0x40:0x44]. 4 bytes are extracted from the buffer. The extracted value is interpreted as a 32-bit integer, denoted as `iv1`. This value also undergoes an XOR operation with the constant `0xDEADBEAF`, producing a new integer value called `iv2`. These byte slices are then combined into the full 8 byte nonce, with the first 4 bytes initialized as `iv2`, and the last 4 bytes as `iv1`.
 
-### Credits
+## Credits
 
 Credit to [everard](https://github.com/everard/Salsa20) for the C++11 implementation of the stream cipher Salsa20
 
