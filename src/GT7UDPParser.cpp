@@ -22,9 +22,9 @@ const uint8_t* GetAsciiBytes(const std::string& inputString, size_t numBytes) {
 
  bool checkMagic(uint8_t* decryptedData) {
     // Define the expected header as an array of bytes
-    uint8_t magic[] = { 0x47, 0x37, 0x53, 0x30 }; // Assuming null-terminated string
+    uint8_t magic[] = { 0x47, 0x37, 0x53, 0x30 }; 
 
-    // Compare the first 5 bytes of receiveBuffer with the expectedHeader
+    // Compare the first bytes of receiveBuffer with the expectedHeader
     return memcmp(decryptedData, magic, 4) == 0;
 }
 

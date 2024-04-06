@@ -42,10 +42,7 @@ float orientationRelativeToNorth; // Orientation to North (RANGE: 1.0 (North) ->
 float angularVelocity[3]; // Speed at which the car turns around axis in rad/s (RANGE: -1 -> 1)
 float bodyHeight; // Body height
 float EngineRPM; // Engine revolutions per minute
-char iv1; // IV for Salsa20 encryption/decryption
-char iv2; // IV for Salsa20 encryption/decryption
-char iv3; // IV for Salsa20 encryption/decryption
-char iv4; // IV for Salsa20 encryption/decryption
+uint8_t iv[4]; // IV for Salsa20 encryption/decryption
 float fuelLevel; // Fuel level of car in liters 
 float fuelCapacity; // Max fuel capacity for current car (RANGE: 100 (most cars) -> 5 (karts) -> 0 (electric cars))  
 float speed; // Speed in m/s
@@ -71,9 +68,9 @@ uint8_t throttle; // Throttle (RANGE: 0 -> 255)
 uint8_t brake; // Brake (RANGE: 0 -> 255)
 uint8_t UNKNOWNBYTE1; // Padding byte
 float roadPlane[3]; // Banking of the road 
-float roadPlaneDistance;
+float roadPlaneDistance; // Distance above or below the plane, e.g a dip in the road is negative, hill is positive.
 float wheelRPS[4]; // Revolutions per second of tyres in rads
-float tyresRadius[4]; // Radius of the tyre in meters
+float tyreRadius[4]; // Radius of the tyre in meters
 float suspHeight[4]; // Suspension height of the car
 uint32_t UNKNOWNFLOAT2; // Unknown float
 uint32_t UNKNOWNFLOAT3; // Unknown float
@@ -102,11 +99,12 @@ public:
     uint8_t getCurrentGearFromByte(void);
     uint8_t getSuggestedGearFromByte(void);
     uint8_t getPowertrainType(void);
+    float getTyreSpeed(int index);
+    float getTyreSlipRatio(int index);
+    uint8_t getFlag(int index); 
 private:
     Packet m_packet_;
     int32_t* pointerToFirstElement();
-    //uint8_t getCurrentGearFromByte();
-    //uint8_t getSuggestedGearFromByte();
 };
 
 #pragma pack(pop)

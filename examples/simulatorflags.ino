@@ -1,4 +1,4 @@
-//File: simpleserialprint.ino
+//File: simulatorflags.ino
 
 //#include "Wifi.h" // ESP32 WiFi include
 #include <ESP8266WiFi.h> // ESP8266 WiFi include
@@ -15,9 +15,9 @@ void startWiFi();
 WiFiUDP Udp;
 
 unsigned int localPort = 33740; // Port that is used in game, 33740
-unsigned int remotePort = 33739; // Port that is to receive the heartbeat on the PS5, 33739
-unsigned long previousT = 0; 
-const long interval = 500; 
+unsigned int remotePort = 33739; // Port that is to receive the heartbeat, 33739
+unsigned long previousT = 0;
+const long interval = 500;
 
 GT7_UDP_Parser* parser;
 
@@ -30,7 +30,7 @@ void setup()
   delay(500);
   Udp.beginPacket(psGTServerIP, remotePort);
   Udp.write(replyPacket);
-  Udp.endPacket(); // Send initial heartbeat
+  Udp.endPacket();
 }
 
 void loop()
@@ -45,21 +45,36 @@ void loop()
     {
       Udp.read(packetBuffer, packetSize);
     }
+
     parser->push(packetBuffer);
 
-    float speed = (parser->packetInfo()->m_packet.speed) * 3.6; // Times by 3.6 to convert from m/s to km/h
+    for (int i = 0; i < 13; ++i)
+    {
+      uint8_t flag = parser->packetInfo()->getFlag(i);
+      Serial.print("Flag ");
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println(flag);
+    }
+    
+    // This is how you would implement flags in your Arduino code without using the function:
 
-    Serial.print("Speed: ");
-    Serial.println(speed);
-  }
+    /*SimulatorFlags flags = parser->packetInfo()->m_packet.flags;
 
-  if (currentT - previousT >= interval)
-  { // Send heartbeat every 500ms
-    previousT = currentT;
-    Udp.beginPacket(psGTServerIP, remotePort);
-    Udp.write(replyPacket); // Sends 'A'
-    Udp.endPacket();
-    //Serial.println("Pckt sent");
+    if (static_cast<int16_t>(flags) & static_cast<int16_t>(SimulatorFlags::TCSActive)) {
+      Serial.println("FLAG: ON");
+    } else {
+      Serial.println("FLAG: OFF");
+    }*/
+
+    if (currentT - previousT >= interval)
+    {
+      previousT = currentT;
+      Udp.beginPacket(psGTServerIP, remotePort);
+      Udp.write(replyPacket);
+      Udp.endPacket();
+      Serial.println("Pckt sent");
+    }
   }
 }
 

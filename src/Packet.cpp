@@ -2,17 +2,21 @@
 #include <inttypes.h>
 #include <cstdio>
 #include <cstring>
+#include <string>
+#include <cmath>
+#include <sstream>
+#include <fstream>
+#include <unordered_map>
+#include <iostream>
 
-const int PACKET_BUFFER_SIZE = 296;
-
-using namespace std;
+constexpr int PACKET_BUFFER_SIZE = 296;
 
 PacketInfo::PacketInfo() {}
 PacketInfo::~PacketInfo() {}
 
 void PacketInfo::push(uint8_t *receiveBuffer) {
     std::memcpy(pointerToFirstElement(), receiveBuffer, PACKET_BUFFER_SIZE);
-};
+}
 
 uint8_t PacketInfo::getCurrentGearFromByte(void) {
     return m_packet.gears & 0b00001111; // Extract the lower 4 bits for gears
@@ -38,7 +42,34 @@ uint8_t PacketInfo::getPowertrainType(void) {
     }
 }
 
-int32_t* PacketInfo::pointerToFirstElement(void)
-{
+float PacketInfo::getTyreSpeed(int index) {
+    if (index >= 0 && index < 4) {
+        return abs(3.6f * m_packet.tyresRadius[index] * m_packet.wheelRPS[index]);
+    } else return 0.0f;
+}
+
+float PacketInfo::getTyreSlipRatio(int index) {
+    float carSpeed = (m_packet.speed * 3.6);
+    float tyreSpeed = getTyreSpeed(index);
+    if (carSpeed != 0.0f) {
+        return tyreSpeed / carSpeed;
+    } else return 0.0f;
+}
+
+uint8_t PacketInfo::getFlag(int index) {
+    SimulatorFlags flags = m_packet.flags;
+    int16_t indexAdjusted = index - 1;
+    if (index < 0 || index > 13) {
+        return 0;
+    }
+
+    if (index == 0) {
+        return (static_cast<int16_t>(flags) == 0) ? 1 : 0;
+    } else {
+        return (index >= 1 && static_cast<int16_t>(flags) & (1 << indexAdjusted)) ? 1 : 0;
+    }
+}
+
+int32_t* PacketInfo::pointerToFirstElement(void) {
     return &m_packet.magic;
 }
