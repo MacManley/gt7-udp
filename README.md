@@ -133,7 +133,7 @@ uint8 getCurrentGearFromByte() // Get the currently selected gear, Using gears
 uint8 getSuggestedGearFromByte() // Get the currently suggested gear, Using gears (Will be 15 if no gear is currently suggested)
 uint8 getPowertrainType() // Get the powertrain type, Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
 float getTyreSpeed() // Get linear tyre speed, using tyreRPS and tyreRadius
-void getTyreSlipRatio() // Get the tyre slip ratio, using speed and tyreSpeed
+float getTyreSlipRatio() // Get the tyre slip ratio, using speed and tyreSpeed
 ```
 
 Here is how you can use them in your program:
