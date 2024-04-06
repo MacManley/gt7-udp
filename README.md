@@ -175,7 +175,7 @@ There are bit flags sent out in the packet that detail game and car state. flags
 |11  |ASM Active            |flags & 1 << 10|
 |12  |TCS Active            |flags & 1 << 11|
 
-These bit flags can be accessed using the getFlags() function as shown below:
+These bit flags can be accessed using the getFlag() function as shown below:
 
 ```C++
 #include "GT7UDPParser.h"
@@ -183,7 +183,7 @@ GT7_UDP_Parser* parser;
 
 void loop()
 {
-    uint8_t TCS = parser->packetInfo()->getFlags(12); // TCS Active flag is ID 12
+    uint8_t TCS = parser->packetInfo()->getFlag(12); // TCS Active flag is ID 12
     if (TCSActive) {
     Serial.println("TCS: Active");
     } else {
