@@ -58,7 +58,7 @@ float boost; // Offset by +1 (EXAMPLE: 1.0 = 0 X 100kPa, 2.0 = 1 x 100kPa)
 float oilPressure; // Oil pressure in bars
 float waterTemp; // Always 85
 float oilTemp; // Always 110
-float tyresTemp[4]; // Tyre temp for all 4 tires (FL -> FR -> RL -> RR)
+float tyreTemp[4]; // Tyre temp for all 4 tires (FL -> FR -> RL -> RR)
 int32 packetId; // ID of packet
 int16 lapCount; // Lap count
 int16 totalLaps; // Laps to finish

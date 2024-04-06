@@ -50,7 +50,7 @@ float boost; // Offset by +1 (EXAMPLE: 1.0 = 0 X 100kPa, 2.0 = 1 x 100kPa) // TO
 float oilPressure; // Oil pressure in bars
 float waterTemp; // Constantly 85
 float oilTemp; // Constantly 110
-float tyresTemp[4]; // Tyre temp for all 4 tires (FL -> FR -> RL -> RR)
+float tyreTemp[4]; // Tyre temp for all 4 tires (FL -> FR -> RL -> RR)
 int32_t packetId; // ID of packet
 int16_t lapCount; // Lap count
 int16_t totalLaps; // Laps to finish
@@ -69,7 +69,7 @@ uint8_t brake; // Brake (RANGE: 0 -> 255)
 uint8_t UNKNOWNBYTE1; // Padding byte
 float roadPlane[3]; // Banking of the road 
 float roadPlaneDistance; // Distance above or below the plane, e.g a dip in the road is negative, hill is positive.
-float wheelRPS[4]; // Revolutions per second of tyres in rads
+float wheelsRPS[4]; // Revolutions per second of tyres in rads
 float tyreRadius[4]; // Radius of the tyre in meters
 float suspHeight[4]; // Suspension height of the car
 uint32_t UNKNOWNFLOAT2; // Unknown float

@@ -44,7 +44,7 @@ uint8_t PacketInfo::getPowertrainType(void) {
 
 float PacketInfo::getTyreSpeed(int index) {
     if (index >= 0 && index < 4) {
-        return abs(3.6f * m_packet.tyresRadius[index] * m_packet.wheelRPS[index]);
+        return abs(3.6f * m_packet.tyreRadius[index] * m_packet.wheelRPS[index]);
     } else return 0.0f;
 }
 
