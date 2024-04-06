@@ -69,7 +69,7 @@ uint8_t brake; // Brake (RANGE: 0 -> 255)
 uint8_t UNKNOWNBYTE1; // Padding byte
 float roadPlane[3]; // Banking of the road 
 float roadPlaneDistance; // Distance above or below the plane, e.g a dip in the road is negative, hill is positive.
-float wheelsRPS[4]; // Revolutions per second of tyres in rads
+float wheelRPS[4]; // Revolutions per second of tyres in rads
 float tyreRadius[4]; // Radius of the tyre in meters
 float suspHeight[4]; // Suspension height of the car
 uint32_t UNKNOWNFLOAT2; // Unknown float
