@@ -201,6 +201,7 @@ void loop()
 |----|-----------------------------------------------|-----|
 |24  |180SX Type X '96                               |28   |
 |31  |Camaro Z28 '69                                 |7    |
+|36  |Chevelle SS 454 Sport Coupé                    |7    |
 |41  |Corvette Stingray (C3) '69                     |7    |
 |48  |Fairlady 240ZG (HS30) '71                      |28   |
 |63  |Corolla Levin 1600GT APEX (AE86) '83           |43   |
@@ -696,8 +697,10 @@ void loop()
 |3539|911 GT3 RS (992) '22                           |136  |
 |3540|Model 3 Performance '23                        |119  |
 |3541|BVLGARI Aluminium VGT                          |158  |
+|3542|SKODA Vision Gran Turismo                      |159  |
 |3543|Genesis X Gran Berlinetta VGT Concept          |152  |
 |3545|Jimny XC '18                                   |39   |
+|3546|AFEELA Prototype 2024                          |160  |
 |3547|R4 GTL '85                                     |34   |
 |3548|Urus '18                                       |112  |
 
