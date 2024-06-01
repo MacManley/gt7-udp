@@ -7,6 +7,7 @@ This program captures and parses packets that are sent by UDP from the Gran Turi
 ```C++
 #include "GT7UDPParser.h"
 GT7_UDP_Parser gt7Telem;
+Packet packetContent;
 
 void setup()
 {
@@ -145,6 +146,7 @@ Here is how you can use them in your program:
 ```C++
 #include "GT7UDPParser.h"
 GT7_UDP_Parser gt7Telem;
+Packet packetContent;
 
 void setup()
 {
@@ -185,11 +187,13 @@ These bit flags can be accessed using the getFlag() function as shown below:
 
 ```C++
 #include "GT7UDPParser.h"
-GT7_UDP_Parser* parser;
+GT7_UDP_Parser gt7Telem;
+Packet packetContent;
 
 void loop()
 {
-    uint8_t TCS = parser->packetInfo()->getFlag(12); // TCS Active flag is ID 12
+    packetContent = gt7Telem.read();
+    uint8_t TCSActive = gt7Telem.getFlag(12);
     if (TCSActive) {
     Serial.println("TCS: Active");
     } else {
