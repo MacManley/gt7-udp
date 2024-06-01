@@ -2,7 +2,7 @@
 
 //#include "Wifi.h" // ESP32 WiFi include
 #include <ESP8266WiFi.h> // ESP8266 WiFi include
-#include <GT7UDP.h>
+#include <GT7UDPParser.h>
 
 const char *SSID = "Your WiFi SSID";
 const char *Password = "Your WiFi Password";

@@ -6,14 +6,18 @@ This program captures and parses packets that are sent by UDP from the Gran Turi
 # Usage:
 ```C++
 #include "GT7UDPParser.h"
-GT7_UDP_Parser* parser;
+GT7_UDP_Parser gt7Telem;
+
+void setup()
+{
+    gt7Telem.begin();
+    gt7Telem.sendHeartbeat();
+}
 
 void loop()
 {
-    parser = new GT7_UDP_Parser();
-    parser->push(*buffer);
+    packetContent = gt7Telem.read();
 }
-
 ```
 
 ### Packet
@@ -145,6 +149,7 @@ GT7_UDP_Parser gt7Telem;
 void setup()
 {
     gt7Telem.begin();
+    gt7Telem.sendHeartbeat();
 }
 
 void loop()

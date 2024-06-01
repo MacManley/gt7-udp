@@ -1,5 +1,5 @@
-#ifndef GT7UDP_H
-#define GT7UDP_H
+#ifndef GT7UDPPARSER_H
+#define GT7UDPPARSER_H
 
 #include <inttypes.h>
 #include <WiFiUdp.h>
