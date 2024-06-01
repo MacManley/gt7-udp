@@ -1,72 +1,118 @@
-#include <stdio.h>
+#include <WiFiUdp.h>
+#include "GT7UDP.h"
+#include "Salsa20.h"
 #include <string>
 #include <span>
 #include <array>
 #include <vector>
-#include "GT7UDPParser.h"
-#include "Packet.h"
-#include "Salsa20.h"
-#include <iostream>
 
-const uint8_t* GetAsciiBytes(const std::string& inputString, size_t numBytes) {
-    // Allocate memory for the ASCII bytes
-    uint8_t* asciiBytes = new uint8_t[numBytes];
+constexpr unsigned int localPort = 33740; 
+constexpr unsigned int remotePort = 33739; 
+constexpr char heartbeatMsg = 'A';
+const std::string Key = "Simulator Interface Packet GT7 ver 0.0";
 
-    // Copy ASCII bytes from inputString to asciiBytes
-    for (size_t i = 0; i < inputString.size() && i < numBytes; ++i) {
+Packet packet;
+
+union IntToBytes {
+    uint32_t integer;
+    uint8_t bytes[4];
+};
+
+std::array<uint8_t, 32> GT7_UDP_Parser::getAsciiBytes(const std::string& inputString) {
+    std::array<uint8_t, 32> asciiBytes = {};
+    for (size_t i = 0; i < inputString.size() && i < asciiBytes.size(); ++i) {
         asciiBytes[i] = static_cast<uint8_t>(inputString[i]);
     }
-
     return asciiBytes;
 }
 
- bool checkMagic(uint8_t* decryptedData) {
-    // Define the expected header as an array of bytes
-    uint8_t magic[] = { 0x47, 0x37, 0x53, 0x30 }; 
-
-    // Compare the first bytes of receiveBuffer with the expectedHeader
-    return memcmp(decryptedData, magic, 4) == 0;
+void GT7_UDP_Parser::begin(const IPAddress playstationIP) {
+    Udp.begin(localPort);
+    remoteIP = playstationIP;
+    dKey = getAsciiBytes(Key);
 }
 
-GT7_UDP_Parser::GT7_UDP_Parser()
-{
-    packetInfo_ = new PacketInfo();
+void GT7_UDP_Parser::sendHeartbeat(void) {
+    Udp.beginPacket(remoteIP, remotePort);
+    Udp.write(heartbeatMsg);
+    Udp.endPacket();
 }
 
-GT7_UDP_Parser::~GT7_UDP_Parser()
-{
-    delete packetInfo_;
+uint8_t GT7_UDP_Parser::getCurrentGearFromByte(void) {
+    return packet.packetContent.gears & 0b00001111; // Extract the lower 4 bits for gears
 }
 
-void GT7_UDP_Parser::push(uint8_t * receiveBuffer)
-{
-    int iv1 = *reinterpret_cast<int*>(&receiveBuffer[0x40]); // Seed IV is always located there
+// Function to extract suggested gear from the byte
+uint8_t GT7_UDP_Parser::getSuggestedGearFromByte(void) {
+    return packet.packetContent.gears >> 4; // Shift right by 4 bits to get the upper 4 bits for suggested gear
+}
+
+
+uint8_t GT7_UDP_Parser::getPowertrainType(void) {
+    if (static_cast<uint8_t>(packet.packetContent.fuelCapacity) > 10) {
+    return 0;
+    } else {
+        switch(static_cast<uint8_t>(packet.packetContent.fuelCapacity)) {
+            case 0: return 1;
+                break;
+            case 5: return 2;
+                break;
+            default: return 255;
+    }
+    }
+}
+
+float GT7_UDP_Parser::getTyreSpeed(int index) {
+    if (index >= 0 && index < 4) {
+        return abs(3.6f * packet.packetContent.tyreRadius[index] * packet.packetContent.wheelRPS[index]);
+    } else return 0.0f;
+}
+
+float GT7_UDP_Parser::getTyreSlipRatio(int index) {
+    float carSpeed = (packet.packetContent.speed * 3.6);
+    float tyreSpeed = getTyreSpeed(index);
+    if (carSpeed != 0.0f) {
+        return tyreSpeed / carSpeed;
+    } else return 0.0f;
+}
+
+uint8_t GT7_UDP_Parser::getFlag(int index) {
+    SimulatorFlags flags = packet.packetContent.flags;
+    int16_t indexAdjusted = index - 1;
+    if (index < 0 || index > 13) {
+        return 0;
+    }
+
+    if (index == 0) {
+        return (static_cast<int16_t>(flags) == 0) ? 1 : 0;
+    } else {
+        return (index >= 1 && static_cast<int16_t>(flags) & (1 << indexAdjusted)) ? 1 : 0;
+    }
+}
+
+Packet GT7_UDP_Parser::readData(void) {
+    uint8_t recvBuffer[sizeof(packet.packetContent)];
+    memset(recvBuffer, 0, sizeof(packet.packetContent));
+    Udp.parsePacket();
+    if (Udp.read(recvBuffer, sizeof(recvBuffer)) == sizeof(packet.packetContent)) {
+    int iv1 = *reinterpret_cast<int*>(&recvBuffer[0x40]); // Seed IV is always located there
     int iv2 = iv1 ^ 0xDEADBEAF;
-        const uint8_t iv[8] = {
-        static_cast<uint8_t>(iv2 & 0xFF), static_cast<uint8_t>((iv2 >> 8) & 0xFF), 
-        static_cast<uint8_t>((iv2 >> 16) & 0xFF), static_cast<uint8_t>((iv2 >> 24) & 0xFF),
-        static_cast<uint8_t>(iv1 & 0xFF), static_cast<uint8_t>((iv1 >> 8) & 0xFF),
-        static_cast<uint8_t>((iv1 >> 16) & 0xFF), static_cast<uint8_t>((iv1 >> 24) & 0xFF)
-};
-        std::string Key = "Simulator Interface Packet GT7 ver 0.0";
-        const uint8_t* asciiBytes = GetAsciiBytes(Key, 32);
-        ucstk::Salsa20 salsa20(asciiBytes);
-        salsa20.setIv(iv);
+    IntToBytes iv1Bytes, iv2Bytes;
+    iv1Bytes.integer = iv1;
+    iv2Bytes.integer = iv2;
 
-        std::vector<uint8_t> decryptedData(0x128);
-        salsa20.processBytes((receiveBuffer), decryptedData.data(), 0x128);
+    // Construct the 8-byte initialization vector
+     uint8_t iv[8] = {
+        iv2Bytes.bytes[0], iv2Bytes.bytes[1], iv2Bytes.bytes[2], iv2Bytes.bytes[3],
+        iv1Bytes.bytes[0], iv1Bytes.bytes[1], iv1Bytes.bytes[2], iv1Bytes.bytes[3]
+    };
 
-        bool checkmagic = checkMagic(decryptedData.data());
+    ucstk::Salsa20 salsa20(dKey.data());
+    salsa20.setIv(iv);
 
-        if (checkMagic) {
-            // Pass the decrypted data to packetInfo_->push()
-            packetInfo_->push(decryptedData.data());
-        }
-    delete[] asciiBytes;
-    
-}
-
-PacketInfo* GT7_UDP_Parser::packetInfo(void)
-{
-    return packetInfo_;
+    std::vector<uint8_t> decryptedData(sizeof(recvBuffer));
+    salsa20.processBytes((recvBuffer), decryptedData.data(), 0x128);
+    memcpy(&packet.packetContent, decryptedData.data(), sizeof(packet.packetContent));
+    } 
+    return packet;
 }

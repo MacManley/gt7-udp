@@ -140,16 +140,17 @@ Here is how you can use them in your program:
 
 ```C++
 #include "GT7UDPParser.h"
-GT7_UDP_Parser* parser;
+GT7_UDP_Parser gt7Telem;
+
+void setup()
+{
+    gt7Telem.begin();
+}
 
 void loop()
 {
-    parser = new GT7_UDP_Parser();
-    parser->push(*buffer);
-    uint8_t extractedGears = parser->packetInfo()->getCurrentGearFromByte();
-    uint8_t extractedSuggestedGear = parser->packetInfo();->getSuggestedGearFromByte();
-    uint8_t extractedPowertrain = parser->packetInfo()->getPowertrainType();
-    float tyreSlipRatio = parser->packetInfo()->getTyreSlipRatio(index);
+    packetContent = gt7Telem.read();
+    currentGear = gt7Telem.getCurrentGearFromByte();
 }
 ```
 
