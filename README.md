@@ -301,6 +301,7 @@ void loop()
 |1481|Countach 25th Anniversary '88                  |112  |
 |1484|Countach LP400 '74                             |112  |
 |1504|458 Italia '09                                 |110  |
+|1506|Gallardo LP 560-4 '08                          |112  |
 |1507|SLS AMG '10                                    |153  |
 |1508|Lancer Evolution VI GSR T.M. SCP '99           |25   |
 |1510|NSX GT500 '08                                  |15   |
@@ -315,6 +316,7 @@ void loop()
 |1541|TTS Coupe '09                                  |5    |
 |1542|Corvette Convertible (C3) '69                  |7    |
 |1543|Challenger R/T '70                             |11   |
+|1544|430 Scuderia '07                               |110  |
 |1545|Murcielago LP 640 '09                          |112  |
 |1549|Amuse NISMO 380RS Super Leggera                |59   |
 |1551|330 P4 '67                                     |110  |
@@ -645,6 +647,7 @@ void loop()
 |3464|Corvette (C1) '58                              |7    |
 |3466|Sierra RS 500 Cosworth '87                     |13   |
 |3467|Civic Type R Limited Edition (FK8) '20         |15   |
+|3468|RGT 4.2 '16                                    |35   |
 |3469|F8 Tributo '19                                 |110  |
 |3471|Celica GT-Four (ST205) '94                     |43   |
 |3473|Chiron '16                                     |113  |
@@ -709,10 +712,13 @@ void loop()
 |3541|BVLGARI Aluminium VGT                          |158  |
 |3542|SKODA Vision Gran Turismo                      |159  |
 |3543|Genesis X Gran Berlinetta VGT Concept          |152  |
+|3544|Genesis X Gran Racer Vision Gran Turismo Concept|152|
 |3545|Jimny XC '18                                   |39   |
 |3546|AFEELA Prototype 2024                          |160  |
 |3547|R4 GTL '85                                     |34   |
 |3548|Urus '18                                       |112  |
+|3550|Impreza Rally Car '98                          |38   |
+|3551|M3 '97                                         |6    |
 
 ## Credits
 
