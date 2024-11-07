@@ -258,6 +258,7 @@ void loop()
 |773 |R32 GT-R V-spec II '94                         |28   |
 |779 |Cappuccino (EA11R) '91                         |39   |
 |781 |Celica GT-FOUR Rally Car (ST205) '95           |43   |
+|799 |Lancer Evolution VIII MR GSR '04               |25   |
 |808 |V6 Escudo Pikes Peak Special spec.98           |39   |
 |810 |Sprinter Trueno 1600GT APEX (AE86) '83         |43   |
 |818 |Corvette (C2) '63                              |7    |
@@ -712,13 +713,15 @@ void loop()
 |3541|BVLGARI Aluminium VGT                          |158  |
 |3542|SKODA Vision Gran Turismo                      |159  |
 |3543|Genesis X Gran Berlinetta VGT Concept          |152  |
-|3544|Genesis X Gran Racer Vision Gran Turismo Concept|152|
+|3544|Genesis X Gran Racer Vision Gran Turismo Concept|152 |
 |3545|Jimny XC '18                                   |39   |
 |3546|AFEELA Prototype 2024                          |160  |
 |3547|R4 GTL '85                                     |34   |
 |3548|Urus '18                                       |112  |
 |3550|Impreza Rally Car '98                          |38   |
 |3551|M3 '97                                         |6    |
+|3553|GT-R Premium edition T-spec '24                |28   |
+|3554|Hiace Van DX '16                               |43   |
 
 ## Credits
 
