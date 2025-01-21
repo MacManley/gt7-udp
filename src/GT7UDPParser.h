@@ -89,6 +89,8 @@ struct Packet {
     GT7Packet packetContent;
 };
 
+#pragma pack(pop)
+
 class GT7_UDP_Parser {
     public:
 		void begin(const IPAddress playstationIP);
