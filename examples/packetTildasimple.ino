@@ -1,4 +1,4 @@
-//File: packetTildasimple.ino
+//File: packetBsimple.ino
 
 //#include "Wifi.h" // ESP32 WiFi include
 #include <ESP8266WiFi.h> // ESP8266 WiFi include
@@ -20,7 +20,7 @@ void setup()
 {
   Serial.begin(115200);
   startWiFi();
-  gt7Telem.begin(ip, 'B');
+  gt7Telem.begin(ip, '~');
   gt7Telem.sendHeartbeat();
 }
 
@@ -29,10 +29,10 @@ void loop()
   unsigned long currentT = millis();
   packetContent= gt7Telem.readData();
 
-    float wheelRot = (packetContent.packetContent.wheelRotation);
+    float recovery = (packetContent.packetContent.energyRecovery);
 
-    Serial.print("Wheel Rotation (rads): ");
-    Serial.println(wheelRot);
+    Serial.print("Energy Recovery: ");
+    Serial.println(recovery);
 
   if (currentT - previousT >= interval)
   { // Send heartbeat every 500ms
