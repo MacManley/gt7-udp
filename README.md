@@ -59,7 +59,7 @@ float orientationRelativeToNorth; // Orientation to North (RANGE: 1.0 (North) ->
 float angularVelocity[3]; // Speed at which the car turns around axis in rad/s (RANGE: -1 -> 1)
 float bodyHeight; // Body height
 float EngineRPM; // Engine revolutions per minute
-uint8 iv[4]; // IV for Salsa20 encryption/decryption
+uint8_t iv[4]; // IV for Salsa20 encryption/decryption
 float fuelLevel; // Fuel level of car in liters 
 float fuelCapacity; // Max fuel capacity for current car (RANGE: 100 (most cars) -> 5 (karts) -> 0 (electric cars))  
 float speed; // Speed in m/s
