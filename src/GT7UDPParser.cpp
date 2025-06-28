@@ -2,16 +2,16 @@
 #include "GT7UDPParser.h"
 #include "Salsa20.h"
 #include <string>
-#include <span>
 #include <array>
 #include <vector>
 
 constexpr unsigned int localPort = 33740; 
 constexpr unsigned int remotePort = 33739; 
-constexpr char heartbeatMsg = 'A';
+constexpr int PACKET_A_SIZE = 296;
+constexpr int PACKET_B_SIZE = 316;
+constexpr int PACKET_C_SIZE = 344;
 const std::string Key = "Simulator Interface Packet GT7 ver 0.0";
 
-Packet packet;
 
 union IntToBytes {
     uint32_t integer;
@@ -26,9 +26,14 @@ std::array<uint8_t, 32> GT7_UDP_Parser::getAsciiBytes(const std::string& inputSt
     return asciiBytes;
 }
 
-void GT7_UDP_Parser::begin(const IPAddress playstationIP) {
+void GT7_UDP_Parser::begin(const IPAddress playstationIP, const char packetVersion) {
     Udp.begin(localPort);
     remoteIP = playstationIP;
+    if ((packetVersion == 'A') || (packetVersion == 'B') || (packetVersion == '~')) {
+    heartbeatMsg = packetVersion;
+    } else {
+    heartbeatMsg = 'A';
+    }
     dKey = getAsciiBytes(Key);
 }
 
@@ -78,30 +83,50 @@ float GT7_UDP_Parser::getTyreSlipRatio(int index) {
 
 uint8_t GT7_UDP_Parser::getFlag(int index) {
     SimulatorFlags flags = packet.packetContent.flags;
-    int16_t indexAdjusted = index - 1;
-    if (index < 0 || index > 13) {
+    if (index < 0 || index > 12) {
         return 0;
     }
 
     if (index == 0) {
         return (static_cast<int16_t>(flags) == 0) ? 1 : 0;
     } else {
-        return (index >= 1 && static_cast<int16_t>(flags) & (1 << indexAdjusted)) ? 1 : 0;
+        return (static_cast<int16_t>(flags) & (1 << (index - 1))) ? 1 : 0;
     }
 }
 
-Packet GT7_UDP_Parser::readData(void) {
+Packet GT7_UDP_Parser::readData() {
     uint8_t recvBuffer[sizeof(packet.packetContent)];
-    memset(recvBuffer, 0, sizeof(packet.packetContent));
-    Udp.parsePacket();
-    if (Udp.read(recvBuffer, sizeof(recvBuffer)) == sizeof(packet.packetContent)) {
+    memset(recvBuffer, 0, sizeof(recvBuffer));
+    int packetSize = Udp.parsePacket();
+    int byteStream = Udp.read(recvBuffer, sizeof(recvBuffer));
+    
+    if (byteStream == PACKET_A_SIZE) {
+        detectedPacketVersion = 'A';
+    } else if (byteStream == PACKET_B_SIZE) {
+        detectedPacketVersion = 'B';
+    } else if (byteStream == PACKET_C_SIZE) {
+        detectedPacketVersion = '~';
+    } else {
+        return packet;
+    }
+
     int iv1 = *reinterpret_cast<int*>(&recvBuffer[0x40]); // Seed IV is always located there
-    int iv2 = iv1 ^ 0xDEADBEAF;
+    
+    switch (detectedPacketVersion)  {
+        case 'A': iv2 = iv1 ^ 0xDEADBEAF;
+            break;
+        case 'B': iv2 = iv1 ^ 0xDEADBEEF;
+            break;
+        case '~': iv2 = iv1 ^ 0x55FABB4F;
+            break;
+        default: iv2 = iv1;
+            break;
+    }
+
     IntToBytes iv1Bytes, iv2Bytes;
     iv1Bytes.integer = iv1;
     iv2Bytes.integer = iv2;
 
-    // Construct the 8-byte initialization vector
      uint8_t iv[8] = {
         iv2Bytes.bytes[0], iv2Bytes.bytes[1], iv2Bytes.bytes[2], iv2Bytes.bytes[3],
         iv1Bytes.bytes[0], iv1Bytes.bytes[1], iv1Bytes.bytes[2], iv1Bytes.bytes[3]
@@ -110,9 +135,8 @@ Packet GT7_UDP_Parser::readData(void) {
     ucstk::Salsa20 salsa20(dKey.data());
     salsa20.setIv(iv);
 
-    std::vector<uint8_t> decryptedData(sizeof(recvBuffer));
-    salsa20.processBytes((recvBuffer), decryptedData.data(), 0x128);
-    memcpy(&packet.packetContent, decryptedData.data(), sizeof(packet.packetContent));
-    } 
+    std::vector<uint8_t> decryptedData(byteStream);
+    salsa20.processBytes((recvBuffer), decryptedData.data(), byteStream);
+    memcpy(&packet.packetContent, decryptedData.data(), byteStream);
     return packet;
-}
+    }

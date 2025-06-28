@@ -8,10 +8,12 @@ This program captures and parses packets that are sent by UDP from the Gran Turi
 #include "GT7UDPParser.h"
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
+IPAddress playstationIP;
+char packetVersion;
 
 void setup()
 {
-    gt7Telem.begin();
+    gt7Telem.begin(playstationIP, packetVersion);
     gt7Telem.sendHeartbeat();
 }
 
@@ -28,26 +30,28 @@ The following data types are used in the structure:
 | Type   | Description             |
 | ------ | ----------------------- |
 | uint8  | Unsigned 8-bit integer  |
-| int8   | Signed 8-bit integer    |
-| uint16 | Unsigned 16-bit integer |
 | int16  | Signed 16-bit integer   |
 | uint32 | Unsigned 32-bit integer |
+| int32  | Signed 32-bit integer   |
 | float  | Floating point (32-bit) |
-| uint64 | Unsigned 64-bit integer |
 
 There is a singular encrypted packet sent out by GT7. The packet is encrypted in the Salsa20 stream cipher. The packets will only be sent from the console if there is a heartbeat sent from a device (in our case an ESP8266/ESP32). Once the console receives a heartbeat, it then establishes a connection with the ESP8266/ESP32 and sends the data to the IP address that was used to send the heartbeat. The console will expect a heartbeat every 100 packets (around 1.6 seconds) or else the connection will cease.
 
-## The Packet: 
+## Packet Types
 
-This singular packet details many different telemetry points such as positioning, car telemetry, laptimes and more.
+Since Update 1.42, two new packet versions/types have been added to the game, known as the "B" and "\~" packets, alongside the original "A" packet. These new packets can be accessed by changing the "A" character sent via the heartbeat to either "B" or "\~". 
+
+## Packet "A": 
+
+This base packet details many different telemetry points such as positioning, car telemetry, laptimes and more.
 
 Size: 296 bytes
 
 Frequency: 60Hz (60 times a second)
 
-```c#
-struct Packet {
-int32 magic; // Magic, different value defines what game is being played
+```c++
+struct PacketA {
+int32_t magic; // Magic, different value defines what game is being played
 float position[3]; // Position on Track in meters in each axis
 float worldVelocity[3]; // Velocity in meters for each axis
 float rotation[3]; // Rotation (Pitch/Yaw/Roll) (RANGE: -1 -> 1)
@@ -64,49 +68,81 @@ float oilPressure; // Oil pressure in bars
 float waterTemp; // Always 85
 float oilTemp; // Always 110
 float tyreTemp[4]; // Tyre temp for all 4 tires (FL -> FR -> RL -> RR)
-int32 packetId; // ID of packet
-int16 lapCount; // Lap count
-int16 totalLaps; // Laps to finish
-int32 bestLaptime; // Best lap time, defaults to -1 if not set
-int32 lastLaptime; // Previous lap time, defaults to -1 if not set
-int32 dayProgression; // Current time of day on track in ms
-int16 RaceStartPosition; // Position of the car before the start of the race, defaults to -1 after race start
-int16 preRaceNumCars; // Number of cars before the race start, defaults to -1 after start of the race
-int16 minAlertRPM; // Minimum RPM that the rev limiter displays an alert
-int16 maxAlertRPM; // Maximum RPM that the rev limiter displays an alert
-int16 calcMaxSpeed; // Highest possible speed achievable of the current transmission settings
+int32_t packetId; // ID of packet
+int16_t lapCount; // Lap count
+int16_t totalLaps; // Laps to finish
+int32_t bestLaptime; // Best lap time, defaults to -1 if not set
+int32_t lastLaptime; // Previous lap time, defaults to -1 if not set
+int32_t dayProgression; // Current time of day on track in ms
+int16_t RaceStartPosition; // Position of the car before the start of the race, defaults to -1 after race start
+int16_t preRaceNumCars; // Number of cars before the race start, defaults to -1 after start of the race
+int16_t minAlertRPM; // Minimum RPM that the rev limiter displays an alert
+int16_t maxAlertRPM; // Maximum RPM that the rev limiter displays an alert
+int16_t calcMaxSpeed; // Highest possible speed achievable of the current transmission settings
 SimulatorFlags flags; // Packet flags
-uint8 gears; // First 4 bits: Current Gear, Last 4 bits: Suggested Gear, see appendices (getCurrentGearFromByte and getSuggestedGearFromByte)
-uint8 throttle; // Throttle (RANGE: 0 -> 255)
-uint8 brake; // Brake (RANGE: 0 -> 255)
-uint8 UNKNOWNBYTE1; // Padding byte
+uint8_t gears; // First 4 bits: Current Gear, Last 4 bits: Suggested Gear, see appendices (getCurrentGearFromByte and getSuggestedGearFromByte)
+uint8_t throttle; // Throttle (RANGE: 0 -> 255)
+uint8_t brake; // Brake (RANGE: 0 -> 255)
+uint8_t UNKNOWNBYTE1; // Padding byte
 float roadPlane[3]; // Banking of the road
 float roadPlaneDistance; // Distance above or below the plane, e.g a dip in the road is negative, hill is positive.
 float wheelRPS[4]; // Revolutions per second of tyres in rads
 float tyreRadius[4]; // Radius of the tyre in meters
 float suspHeight[4]; // Suspension height of the car
-uint32 UNKNOWNFLOAT2; // Unknown float
-uint32 UNKNOWNFLOAT3; // Unknown float
-uint32 UNKNOWNFLOAT4; // Unknown float
-uint32 UNKNOWNFLOAT5; // Unknown float
-uint32 UNKNOWNFLOAT6; // Unknown float
-uint32 UNKNOWNFLOAT7; // Unknown float
-uint32 UNKNOWNFLOAT8; // Unknown float
-uint32 UNKNOWNFLOAT9; // Unknown float
+float UNKNOWNFLOATS[8]; // Unknown floats
 float clutch; // Clutch (RANGE: 0.0 -> 1.0)
 float clutchEngagement; // Clutch Engangement (RANGE: 0.0 -> 1.0)
 float RPMFromClutchToGearbox; // Pretty much same as engine RPM, is 0 when clutch is depressed
 float transmissionTopSpeed; // Top speed as gear ratio value
 float gearRatios[8]; // Gear ratios of the car up to 8
-int32 carCode; // This value may be overriden if using a car with more then 9 gears, see appendices
-};
-
-struct PacketInfo
-{
-Packet m_packet;
+int32_t carCode; // This value may be overriden if using a car with more then 9 gears, see appendices
 };
 ```
 
+## Packet "B":
+
+Packet B features the same structure as Packet A, excluding 5 additional floats.
+
+Size: 316 bytes
+
+Frequency: 60Hz (not available in Sport Mode)
+
+```c++
+struct PacketB : public PacketA {
+//...
+float wheelRotation; // Calculates the wheel rotation in radians
+float UNKNOWNFLOAT10; // Unknown float
+float sway; // X axis acceleration
+float heave; // Y axis acceleration
+float surge; // Z axis acceleration
+};
+```
+
+## Packet "\~":
+
+Packet ~ includes all data from both Packet A and Packet B, while adding various miscellanous datapoints such as active aero vectors.
+
+Size: 344 Bytes
+
+Frequency: 60Hz (not available in Replays)
+
+```c++
+//...
+struct PacketC : public PacketB {
+uint8_t throttleFiltered; // Filtered Throttle Output
+uint8_t brakeFiltered; // Filtered Brake Output
+uint8_t UNKNOWNUINT81; // Unknown unsigned 8 bit integer
+uint8_t UNKNOWNUINT82; // Unknown unsigned 8 bit integer
+float leftFlapDeflection; // Deflection of the active aero on the left side of the car. (RANGE: -1.0 -> 1.0)
+float rightFlapDeflection; // Deflection of the active aero on the right side of the car. (RANGE: -1.0 -> 1.0)
+float leftRearFlapMode; // Mode of the active aero on the left side of the car (RANGE: -1.0 -> 1.0)
+float rightRearFlapMode; // Mode of the active aero on the right side of the car (RANGE: -1.0 -> 1.0)
+float energyRecovery; // Energy being recovered to the battery
+float UNKNOWNFLOAT11; // Unknown float
+}
+```
+
+> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "B" and "\~" are still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
 
 ## Encryption 
 
@@ -122,12 +158,9 @@ This key is 39 bytes long. Each character in the string has to be converted into
 
 ### ***Nonce***
 
-The beginnings of the 8 byte nonce can be located at position \[0x40:0x44]. 4 bytes are extracted from the buffer. The extracted value is interpreted as a 32-bit integer, denoted as `iv1`. This value also undergoes an XOR operation with the constant `0xDEADBEAF`, producing a new integer value called `iv2`. These byte slices are then combined into the full 8 byte nonce, with the first 4 bytes initialized as `iv2`, and the last 4 bytes as `iv1`.
-
+The beginnings of the 8 byte nonce can be located at position \[0x40:0x44]. 4 bytes are extracted from the buffer. The extracted value is interpreted as a 32-bit integer, denoted as `iv1`. This value also undergoes an XOR operation with the constant `0xDEADBEAF`, `0xDEADBEEF` or `0x55FABB4F` depending on the packet version, producing a new integer value called `iv2`. These byte slices are then combined into the full 8 byte nonce, with the first 4 bytes initialized as `iv2`, and the last 4 bytes as `iv1`.
 
 # **Appendices**
-
-Here are some extra functions and also values used for some of the parameters in the UDP output
 
 ## Additional Functions
 
@@ -201,7 +234,6 @@ void loop()
     }
 }
 ```
-
 
 
 ## Car and Manufacturer IDs

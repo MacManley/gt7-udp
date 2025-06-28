@@ -1,4 +1,4 @@
-//File: simpleserialprint.ino
+//File: packetBsimple.ino
 
 //#include "Wifi.h" // ESP32 WiFi include
 #include <ESP8266WiFi.h> // ESP8266 WiFi include
@@ -20,7 +20,7 @@ void setup()
 {
   Serial.begin(115200);
   startWiFi();
-  gt7Telem.begin(ip); // Will default to Packet A with no secondary input, put "B" or "~" to access other packets
+  gt7Telem.begin(ip, '~');
   gt7Telem.sendHeartbeat();
 }
 
@@ -29,10 +29,10 @@ void loop()
   unsigned long currentT = millis();
   packetContent= gt7Telem.readData();
 
-    float speed = (packetContent.packetContent.speed) * 3.6; // Times by 3.6 to convert from m/s to km/h
+    float recovery = (packetContent.packetContent.energyRecovery);
 
-    Serial.print("Speed: ");
-    Serial.println(speed);
+    Serial.print("Energy Recovery: ");
+    Serial.println(recovery);
 
   if (currentT - previousT >= interval)
   { // Send heartbeat every 500ms
