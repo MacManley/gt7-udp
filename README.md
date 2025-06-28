@@ -139,7 +139,7 @@ float leftRearFlapMode; // Mode of the active aero on the left side of the car (
 float rightRearFlapMode; // Mode of the active aero on the right side of the car (RANGE: -1.0 -> 1.0)
 float energyRecovery; // Energy being recovered to the battery
 float UNKNOWNFLOAT11; // Unknown float
-}
+};
 ```
 
 > Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "B" and "\~" are still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
