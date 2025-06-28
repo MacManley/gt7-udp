@@ -4,7 +4,7 @@
 This program captures and parses packets that are sent by UDP from the Gran Turismo 7 game on PS4/PS5. This library is written specifically for usage on the ESP32 and ESP8266.
 
 # Usage:
-```C++
+```c++
 #include "GT7UDPParser.h"
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
@@ -35,7 +35,7 @@ The following data types are used in the structure:
 | int32  | Signed 32-bit integer   |
 | float  | Floating point (32-bit) |
 
-There is a singular encrypted packet sent out by GT7. The packet is encrypted in the Salsa20 stream cipher. The packets will only be sent from the console if there is a heartbeat sent from a device (in our case an ESP8266/ESP32). Once the console receives a heartbeat, it then establishes a connection with the ESP8266/ESP32 and sends the data to the IP address that was used to send the heartbeat. The console will expect a heartbeat every 100 packets (around 1.6 seconds) or else the connection will cease.
+There is an encrypted packet sent out by GT7. The packet is encrypted in the Salsa20 stream cipher. The packets will only be sent from the console if there is a heartbeat sent from a device (in our case an ESP8266/ESP32). Once the console receives a heartbeat, it then establishes a connection with the ESP8266/ESP32 and sends the data to the IP address that was used to send the heartbeat. The console will expect a heartbeat every 100 packets (around 1.6 seconds) or else the connection will cease.
 
 ## Packet Types
 
@@ -108,8 +108,8 @@ Size: 316 bytes
 Frequency: 60Hz (not available in Sport Mode)
 
 ```c++
-struct PacketB : public PacketA {
 //...
+struct PacketB : public PacketA {
 float wheelRotation; // Calculates the wheel rotation in radians
 float UNKNOWNFLOAT10; // Unknown float
 float sway; // X axis acceleration
@@ -166,17 +166,17 @@ The beginnings of the 8 byte nonce can be located at position \[0x40:0x44]. 4 by
 
 These are the current additional functions needed to retrieve additional information not immediately present in the packet
 
-```c#
-uint8 getCurrentGearFromByte() // Get the currently selected gear, Using gears
-uint8 getSuggestedGearFromByte() // Get the currently suggested gear, Using gears (Will be 15 if no gear is currently suggested)
-uint8 getPowertrainType() // Get the powertrain type, Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
+```c++
+uint8_t getCurrentGearFromByte() // Get the currently selected gear, Using gears
+uint8_t getSuggestedGearFromByte() // Get the currently suggested gear, Using gears (Will be 15 if no gear is currently suggested)
+uint8_t getPowertrainType() // Get the powertrain type, Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
 float getTyreSpeed() // Get linear tyre speed, using tyreRPS and tyreRadius
 float getTyreSlipRatio() // Get the tyre slip ratio, using speed and tyreSpeed
 ```
 
 Here is how you can use them in your program:
 
-```C++
+```c++
 #include "GT7UDPParser.h"
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
@@ -190,7 +190,7 @@ void setup()
 void loop()
 {
     packetContent = gt7Telem.read();
-    currentGear = gt7Telem.getCurrentGearFromByte();
+    uint8_t currentGear = gt7Telem.getCurrentGearFromByte();
 }
 ```
 
