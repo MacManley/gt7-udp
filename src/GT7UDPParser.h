@@ -97,10 +97,7 @@ struct PacketC : public PacketB {
     uint8_t brakeFiltered; // Filtered Brake Output
     uint8_t UNKNOWNUINT81; // Unknown unsigned 8 bit integer
     uint8_t UNKNOWNUINT82; // Unknown unsigned 8 bit integer
-    float leftFlapDeflection; // Deflection of the active aero on the left side of the car. (RANGE: -1.0 -> 1.0)
-    float rightFlapDeflection; // Deflection of the active aero on the right side of the car. (RANGE: -1.0 -> 1.0)
-    float leftRearFlapMode; // Mode of the active aero on the left side of the car (RANGE: -1.0 -> 1.0)
-    float rightRearFlapMode; // Mode of the active aero on the right side of the car (RANGE: -1.0 -> 1.0)
+    float torqueVectors[4]; // Torque vectoring for certain cars - Positive = driving force - Negative = braking or regenerating
     float energyRecovery; // Energy being recovered to the battery
     float UNKNOWNFLOAT11; // Unknown float
 };
