@@ -164,11 +164,11 @@ The beginnings of the 8 byte nonce can be located at position \[0x40:0x44]. 4 by
 These are the current additional functions needed to retrieve additional information not immediately present in the packet
 
 ```c++
-uint8_t getCurrentGearFromByte() // Get the currently selected gear, Using gears
-uint8_t getSuggestedGearFromByte() // Get the currently suggested gear, Using gears (Will be 15 if no gear is currently suggested)
-uint8_t getPowertrainType() // Get the powertrain type, Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
-float getTyreSpeed() // Get linear tyre speed, using tyreRPS and tyreRadius
-float getTyreSlipRatio() // Get the tyre slip ratio, using speed and tyreSpeed
+uint8_t getCurrentGearFromByte(); // Get the currently selected gear, Using gears
+uint8_t getSuggestedGearFromByte(); // Get the currently suggested gear, Using gears (Will be 15 if no gear is currently suggested)
+uint8_t getPowertrainType(); // Get the powertrain type, Using fuelCapacity, 0: Combustion Engine, 1: Electric, 2: Karts
+float getTyreSpeed(); // Get linear tyre speed, using tyreRPS and tyreRadius
+float getTyreSlipRatio(); // Get the tyre slip ratio, using speed and tyreSpeed
 ```
 
 Here is how you can use them in your program:
