@@ -5,7 +5,7 @@ This program captures and parses packets that are sent by UDP from the Gran Turi
 
 # Usage:
 ```c++
-#include "GT7UDPParser.h"
+#include <GT7UDPParser.h>
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
 IPAddress playstationIP;
@@ -20,6 +20,7 @@ void setup()
 void loop()
 {
     packetContent = gt7Telem.read();
+//...
 }
 ```
 
@@ -174,7 +175,7 @@ float getTyreSlipRatio(); // Get the tyre slip ratio, using speed and tyreSpeed
 Here is how you can use them in your program:
 
 ```c++
-#include "GT7UDPParser.h"
+#include <GT7UDPParser.h>
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
 
@@ -216,7 +217,7 @@ There are bit flags sent out in the packet that detail game and car state. flags
 These bit flags can be accessed using the getFlag() function as shown below:
 
 ```C++
-#include "GT7UDPParser.h"
+#include <GT7UDPParser.h>
 GT7_UDP_Parser gt7Telem;
 Packet packetContent;
 
