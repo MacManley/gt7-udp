@@ -92,7 +92,7 @@ struct PacketB : public PacketA {
     float surge; // Z axis acceleration
 };
 
-struct PacketC : public PacketB {
+struct PacketTilda : public PacketB {
     uint8_t throttleFiltered; // Filtered Throttle Output
     uint8_t brakeFiltered; // Filtered Brake Output
     uint8_t UNKNOWNUINT81; // Unknown unsigned 8 bit integer
@@ -100,6 +100,13 @@ struct PacketC : public PacketB {
     float torqueVectors[4]; // Torque vectoring for certain cars - Positive = driving force - Negative = braking or regenerating
     float energyRecovery; // Energy being recovered to the battery
     float UNKNOWNFLOAT11; // Unknown float
+};
+
+struct PacketC : public PacketTilda {
+    char surfaceType[4]; // The kind of surface in contact with the tyres (T: tarmac, C: curb/kerb D: Dirt/Grass)
+    int32_t currentLap; // The current lap being set in milliseconds
+    float UNKNOWNFLOATS[3]; // Unknown floats
+    char carCategory[4]; // Null terminated string of car category (GR3, GRX etc.)
 };
 
 struct Packet {

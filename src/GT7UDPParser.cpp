@@ -9,7 +9,8 @@ constexpr unsigned int localPort = 33740;
 constexpr unsigned int remotePort = 33739; 
 constexpr int PACKET_A_SIZE = 296;
 constexpr int PACKET_B_SIZE = 316;
-constexpr int PACKET_C_SIZE = 344;
+constexpr int PACKET_TILDA_SIZE = 344;
+constexpr int PACKET_C_SIZE = 368;
 const std::string Key = "Simulator Interface Packet GT7 ver 0.0";
 
 
@@ -29,7 +30,7 @@ std::array<uint8_t, 32> GT7_UDP_Parser::getAsciiBytes(const std::string& inputSt
 void GT7_UDP_Parser::begin(const IPAddress playstationIP, const char packetVersion) {
     Udp.begin(localPort);
     remoteIP = playstationIP;
-    if ((packetVersion == 'A') || (packetVersion == 'B') || (packetVersion == '~')) {
+    if ((packetVersion == 'A') || (packetVersion == 'B') || (packetVersion == '~') || (packetVersion == 'C')) {
     heartbeatMsg = packetVersion;
     } else {
     heartbeatMsg = 'A';
@@ -104,10 +105,12 @@ Packet GT7_UDP_Parser::readData() {
         detectedPacketVersion = 'A';
     } else if (byteStream == PACKET_B_SIZE) {
         detectedPacketVersion = 'B';
-    } else if (byteStream == PACKET_C_SIZE) {
+    } else if (byteStream == PACKET_TILDA_SIZE) {
         detectedPacketVersion = '~';
+    } else if (byteStream == PACKET_C_SIZE) {
+        detectedPacketVersion = 'C';
     } else {
-        return packet;
+        detectedPacketVersion = ' ';
     }
 
     int iv1 = *reinterpret_cast<int*>(&recvBuffer[0x40]); // Seed IV is always located there
@@ -118,6 +121,8 @@ Packet GT7_UDP_Parser::readData() {
         case 'B': iv2 = iv1 ^ 0xDEADBEEF;
             break;
         case '~': iv2 = iv1 ^ 0x55FABB4F;
+            break;
+        case 'C': iv2 = iv1 ^ 0xDEADBEEF;
             break;
         default: iv2 = iv1;
             break;

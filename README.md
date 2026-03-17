@@ -30,6 +30,7 @@ The following data types are used in the structure:
 
 | Type   | Description             |
 | ------ | ----------------------- |
+| char   | 8-bit character         |
 | uint8  | Unsigned 8-bit integer  |
 | int16  | Signed 16-bit integer   |
 | uint32 | Unsigned 32-bit integer |
@@ -40,7 +41,9 @@ There is an encrypted packet sent out by GT7. The packet is encrypted in the Sal
 
 ## Packet Types
 
-Since Update 1.42, two new packet versions/types have been added to the game, known as the "B" and "\~" packets, alongside the original "A" packet. These new packets can be accessed by changing the "A" character sent via the heartbeat to either "B" or "\~". 
+Since Update 1.42, two new packet type have been added to the game, known as the "B" and "\~" packets, alongside the original "A" packet. These new packets can be accessed by changing the "A" character sent via the heartbeat to either "B" or "\~". 
+
+Since around Update ~1.68, a new packet type emerged known as the "C" packet. It can be accessed by changing the "A", "B" or "\~" heartbeat to "C".
 
 ## Packet "A": 
 
@@ -102,7 +105,7 @@ int32_t carCode; // This value may be overriden if using a car with more then 9 
 
 ## Packet "B":
 
-Packet B features the same structure as Packet A, excluding 5 additional floats.
+Packet "B" features the same structure as Packet A, excluding 5 additional floats.
 
 Size: 316 bytes
 
@@ -121,7 +124,7 @@ float surge; // Z axis acceleration
 
 ## Packet "\~":
 
-Packet ~ includes all data from both Packet A and Packet B, while adding various miscellanous datapoints such as active aero vectors.
+Packet "\~" includes all data from both Packet A and Packet B, while adding various miscellanous datapoints such as active aero vectors.
 
 Size: 344 Bytes
 
@@ -129,7 +132,7 @@ Frequency: 60Hz (not available in Replays)
 
 ```c++
 //...
-struct PacketC : public PacketB {
+struct PacketTilda : public PacketB {
 uint8_t throttleFiltered; // Filtered Throttle Output
 uint8_t brakeFiltered; // Filtered Brake Output
 uint8_t UNKNOWNUINT81; // Unknown unsigned 8 bit integer
@@ -140,7 +143,24 @@ float UNKNOWNFLOAT11; // Unknown float
 };
 ```
 
-> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "B" and "\~" are still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
+## Packet "C": 
+
+Packet C includes all the data from previous packets, while adding car and laptime metrics.
+
+Size: 368 Bytes
+
+Frequency: 60Hz
+
+```c++
+struct PacketC : public PacketB {
+char surfaceType[4]; // The kind of surface in contact with the tyres (T: tarmac, C: curb/kerb D: Dirt/Grass)
+int32_t currentLap; // The current lap being set in milliseconds
+float UNKNOWNFLOATS[3]; // Unknown floats
+char carCategory[4]; // Null terminated string of car category (G R 3 NUL, G R X NUL etc. Look at 3rd character for the actual type, the GR can be ignored most of the time)
+};
+```
+
+> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "B", "\~" and "C" are still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
 
 ## Encryption 
 
