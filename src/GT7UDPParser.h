@@ -86,7 +86,7 @@ struct PacketA {
 
 struct PacketB : public PacketA {
     float wheelRotation; // Calculates the wheel rotation in radians
-    float UNKNOWNFLOAT10; // Unknown float
+    float steeringAngularVelocity; // Angular velocity of the steering wheel in rad/s
     float sway; // X axis acceleration
     float heave; // Y axis acceleration
     float surge; // Z axis acceleration
@@ -105,7 +105,8 @@ struct PacketTilda : public PacketB {
 struct PacketC : public PacketTilda {
     char surfaceType[4]; // The kind of surface in contact with the tyres (T: tarmac, C: curb/kerb D: Dirt/Grass)
     int32_t currentLap; // The current lap being set in milliseconds
-    float UNKNOWNFLOATS[3]; // Unknown floats
+    float wheelSteeringAngle[2]; // Steering angle of the front wheels in radians (left to right)
+    float wheelBase; // Distance between the front and rear axles in meters (front left  of the car to rear left of the car)
     char carCategory[4]; // Null terminated string of car category (GR3, GRX etc.)
 };
 

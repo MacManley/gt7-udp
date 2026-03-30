@@ -115,7 +115,7 @@ Frequency: 60Hz (not available in Sport Mode)
 //...
 struct PacketB : public PacketA {
 float wheelRotation; // Calculates the wheel rotation in radians
-float UNKNOWNFLOAT10; // Unknown float
+float steeringAngularVelocity; // Angular velocity of the steering wheel in rad/s
 float sway; // X axis acceleration
 float heave; // Y axis acceleration
 float surge; // Z axis acceleration
@@ -143,6 +143,8 @@ float UNKNOWNFLOAT11; // Unknown float
 };
 ```
 
+> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "\~" is still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
+
 ## Packet "C": 
 
 Packet C includes all the data from previous packets, while adding car and laptime metrics.
@@ -155,12 +157,11 @@ Frequency: 60Hz
 struct PacketC : public PacketB {
 char surfaceType[4]; // The kind of surface in contact with the tyres (T: tarmac, C: curb/kerb D: Dirt/Grass)
 int32_t currentLap; // The current lap being set in milliseconds
-float UNKNOWNFLOATS[3]; // Unknown floats
+float wheelSteeringAngle[2]; // Steering angle of the front wheels in radians (left to right)
+float wheelBase; // Distance between the front and rear axles in meters (front left  of the car to rear left of the car)
 char carCategory[4]; // Null terminated string of car category (G R 3 NUL, G R X NUL etc. Look at 3rd character for the actual type, the GR can be ignored most of the time)
 };
 ```
-
-> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "B", "\~" and "C" are still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
 
 ## Encryption 
 
@@ -792,6 +793,8 @@ Credit to [everard](https://github.com/everard/Salsa20) for the C++11 implementa
 Credit to [Nenkai](https://github.com/Nenkai/PDTools) for help with IV setup and their work on GT7 UDP Capabilities.
 
 Credit to [ddm999](https://github.com/ddm999/gt7info) for CSV file of car and manufacturer IDs (I converted it into a markdown table).
+
+Credit to [vwhitteron](https://github.com/vwhitteron), [Chi-Ho](https://github.com/Chi-Ho), and [Beregoz](https://github.com/Beregoz) for their help in researching the (new)[https://github.com/Nenkai/PDTools/issues/18] packet variant, Packet "C".
 
 Thanks to members of GTPlanet for their findings on this hidden gem in GT7, find the thread [here](https://www.gtplanet.net/forum/threads/gt7-is-compatible-with-motion-rig.410728/).
 
