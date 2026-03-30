@@ -212,6 +212,18 @@ void loop()
 }
 ```
 
+## Surface Type 
+
+These are the surface type IDs for each surface type. surfaceType is comprised of 4 characters, one for each wheel.
+
+|ID |Surface Type |
+|-----|-----------|
+| "D" | Curb/Kerb |
+| "D" | Dirt |
+| "G" | Grass |
+| "S" | Sand |
+| "s" | Snow |
+| "T" | Tarmac |
 
 ## Simulator Flags
 
