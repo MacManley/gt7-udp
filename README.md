@@ -1,7 +1,7 @@
 # Gran Turismo 7 UDP | Library for use on ESP 32 / ESP8266 devices
 **Data Output from the Gran Turismo 7 Game**
 
-This program captures and parses packets that are sent by UDP from the Gran Turismo 7 game on PS4/PS5. This library is written specifically for usage on the ESP32 and ESP8266.
+This program captures and parses packets that are sent by UDP from the Gran Turismo 7 game on PS4/PS5. This library is written in C++, specifically for usage on the ESP32 and ESP8266.
 
 # Usage:
 ```c++
@@ -143,7 +143,7 @@ float UNKNOWNFLOAT11; // Unknown float
 };
 ```
 
-> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "\~" is still under ongoing research to determine the function of the unknown integers and floats. The packet structure of both is subject to change upon any findings.
+> Note: Unlike the unknown bytes and floats of packet A which are assumed to be padding, Packet "\~" is still under ongoing research to determine the function of the unknown integers and floats. Therefore, the packet structure is subject to change upon any new findings.
 
 ## Packet "C": 
 
