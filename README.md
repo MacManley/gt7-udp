@@ -794,7 +794,7 @@ Credit to [Nenkai](https://github.com/Nenkai/PDTools) for help with IV setup and
 
 Credit to [ddm999](https://github.com/ddm999/gt7info) for CSV file of car and manufacturer IDs (I converted it into a markdown table).
 
-Credit to [vwhitteron](https://github.com/vwhitteron), [Chi-Ho](https://github.com/Chi-Ho), and [Beregoz](https://github.com/Beregoz) for their help in researching the (new)[https://github.com/Nenkai/PDTools/issues/18] packet variant, Packet "C".
+Credit to [vwhitteron](https://github.com/vwhitteron), [Chi-Ho](https://github.com/Chi-Ho), and [Beregoz](https://github.com/Beregoz) for their help in researching the [new](https://github.com/Nenkai/PDTools/issues/18) packet variant, Packet "C".
 
 Thanks to members of GTPlanet for their findings on this hidden gem in GT7, find the thread [here](https://www.gtplanet.net/forum/threads/gt7-is-compatible-with-motion-rig.410728/).
 
