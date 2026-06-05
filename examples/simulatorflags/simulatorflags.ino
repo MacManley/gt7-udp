@@ -6,7 +6,7 @@
 
 const char *SSID = "Your WiFi SSID";
 const char *Password = "Your WiFi Password";
-const IPAddress ip(..., ..., ., ..); // Enter your Playstations IP here
+const IPAddress ip(255, 255, 255, 255); // Enter your Playstations IP here
 
 void startWiFi();
 
