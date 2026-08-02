@@ -96,11 +96,19 @@ uint8_t GT7_UDP_Parser::getFlag(int index) {
 }
 
 Packet GT7_UDP_Parser::readData() {
+    int packetSize = Udp.parsePacket();
+    if (packetSize <= 0) {
+        return packet; // nothing new yet — hand back the last decoded packet
+    }
+
     uint8_t recvBuffer[sizeof(packet.packetContent)];
     memset(recvBuffer, 0, sizeof(recvBuffer));
-    int packetSize = Udp.parsePacket();
     int byteStream = Udp.read(recvBuffer, sizeof(recvBuffer));
-    
+
+    if (byteStream <= 0) {
+        return packet;
+    }
+
     if (byteStream == PACKET_A_SIZE) {
         detectedPacketVersion = 'A';
     } else if (byteStream == PACKET_B_SIZE) {
@@ -113,26 +121,21 @@ Packet GT7_UDP_Parser::readData() {
         detectedPacketVersion = ' ';
     }
 
-    int iv1 = *reinterpret_cast<int*>(&recvBuffer[0x40]); // Seed IV is always located there
-    
-    switch (detectedPacketVersion)  {
-        case 'A': iv2 = iv1 ^ 0xDEADBEAF;
-            break;
-        case 'B': iv2 = iv1 ^ 0xDEADBEEF;
-            break;
-        case '~': iv2 = iv1 ^ 0x55FABB4F;
-            break;
-        case 'C': iv2 = iv1 ^ 0xDEADBEEF;
-            break;
-        default: iv2 = iv1;
-            break;
+    int iv1 = *reinterpret_cast<int*>(&recvBuffer[0x40]);
+
+    switch (detectedPacketVersion) {
+        case 'A': iv2 = iv1 ^ 0xDEADBEAF; break;
+        case 'B': iv2 = iv1 ^ 0xDEADBEEF; break;
+        case '~': iv2 = iv1 ^ 0x55FABB4F; break;
+        case 'C': iv2 = iv1 ^ 0xDEADBEEF; break;
+        default:  iv2 = iv1; break;
     }
 
     IntToBytes iv1Bytes, iv2Bytes;
     iv1Bytes.integer = iv1;
     iv2Bytes.integer = iv2;
 
-     uint8_t iv[8] = {
+    uint8_t iv[8] = {
         iv2Bytes.bytes[0], iv2Bytes.bytes[1], iv2Bytes.bytes[2], iv2Bytes.bytes[3],
         iv1Bytes.bytes[0], iv1Bytes.bytes[1], iv1Bytes.bytes[2], iv1Bytes.bytes[3]
     };
@@ -141,7 +144,7 @@ Packet GT7_UDP_Parser::readData() {
     salsa20.setIv(iv);
 
     std::vector<uint8_t> decryptedData(byteStream);
-    salsa20.processBytes((recvBuffer), decryptedData.data(), byteStream);
+    salsa20.processBytes(recvBuffer, decryptedData.data(), byteStream);
     memcpy(&packet.packetContent, decryptedData.data(), byteStream);
     return packet;
-    }
+}
