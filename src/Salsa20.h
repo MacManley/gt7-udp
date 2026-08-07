@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2014 Nezametdinov E. Ildus
+// SPDX-License-Identifier: MIT
+
 /*
 Copyright (c) 2014 Nezametdinov E. Ildus
 

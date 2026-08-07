@@ -1,4 +1,5 @@
-//File: packetTildasimple.ino
+// File: packetTildasimple.ino
+// Author: MacManley
 
 //#include "Wifi.h" // ESP32 WiFi include
 #include <ESP8266WiFi.h> // ESP8266 WiFi include

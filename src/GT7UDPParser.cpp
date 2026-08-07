@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 MacManley
+// SPDX-License-Identifier: MIT
+
 #include <WiFiUdp.h>
 #include "GT7UDPParser.h"
 #include "Salsa20.h"
@@ -132,7 +135,7 @@ Packet GT7_UDP_Parser::readData() {
     iv1Bytes.integer = iv1;
     iv2Bytes.integer = iv2;
 
-     uint8_t iv[8] = {
+    uint8_t iv[8] = {
         iv2Bytes.bytes[0], iv2Bytes.bytes[1], iv2Bytes.bytes[2], iv2Bytes.bytes[3],
         iv1Bytes.bytes[0], iv1Bytes.bytes[1], iv1Bytes.bytes[2], iv1Bytes.bytes[3]
     };
@@ -141,7 +144,7 @@ Packet GT7_UDP_Parser::readData() {
     salsa20.setIv(iv);
 
     std::vector<uint8_t> decryptedData(byteStream);
-    salsa20.processBytes((recvBuffer), decryptedData.data(), byteStream);
+    salsa20.processBytes(recvBuffer, decryptedData.data(), byteStream);
     memcpy(&packet.packetContent, decryptedData.data(), byteStream);
     return packet;
     }

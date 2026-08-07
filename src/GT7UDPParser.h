@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 MacManley
+// SPDX-License-Identifier: MIT
+
 #ifndef GT7UDPPARSER_H
 #define GT7UDPPARSER_H
 
