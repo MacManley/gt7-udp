@@ -103,6 +103,10 @@ Packet GT7_UDP_Parser::readData() {
     memset(recvBuffer, 0, sizeof(recvBuffer));
     int packetSize = Udp.parsePacket();
     int byteStream = Udp.read(recvBuffer, sizeof(recvBuffer));
+
+    if packetSize <= 0 || byteStream <= 0) {
+        return packet; // Return the last valid packet if no new data is received
+    }
     
     if (byteStream == PACKET_A_SIZE) {
         detectedPacketVersion = 'A';
