@@ -73,7 +73,7 @@ uint8_t GT7_UDP_Parser::getPowertrainType(void) {
 
 float GT7_UDP_Parser::getTyreSpeed(int index) {
     if (index >= 0 && index < 4) {
-        return abs(3.6f * packet.packetContent.tyreRadius[index] * packet.packetContent.wheelRPS[index]);
+        return fabsf(3.6f * packet.packetContent.tyreRadius[index] * packet.packetContent.wheelRPS[index]);
     } else return 0.0f;
 }
 
@@ -104,7 +104,7 @@ Packet GT7_UDP_Parser::readData() {
     int packetSize = Udp.parsePacket();
     int byteStream = Udp.read(recvBuffer, sizeof(recvBuffer));
 
-    if packetSize <= 0 || byteStream <= 0) {
+    if (packetSize <= 0 || byteStream <= 0) {
         return packet; // Return the last valid packet if no new data is received
     }
     
