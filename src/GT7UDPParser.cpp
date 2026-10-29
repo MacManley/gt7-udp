@@ -73,7 +73,7 @@ uint8_t GT7_UDP_Parser::getPowertrainType(void) {
 
 float GT7_UDP_Parser::getTyreSpeed(int index) {
     if (index >= 0 && index < 4) {
-        return fabsf(3.6f * packet.packetContent.tyreRadius[index] * packet.packetContent.wheelRPS[index]);
+        return abs(3.6f * packet.packetContent.tyreRadius[index] * packet.packetContent.wheelRPS[index]);
     } else return 0.0f;
 }
 
