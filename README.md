@@ -19,7 +19,7 @@ void setup()
 
 void loop()
 {
-    packetContent = gt7Telem.read();
+    packetContent = gt7Telem.readData();
 //...
 }
 ```
@@ -208,7 +208,7 @@ void setup()
 
 void loop()
 {
-    packetContent = gt7Telem.read();
+    packetContent = gt7Telem.readData();
     uint8_t currentGear = gt7Telem.getCurrentGearFromByte();
 }
 ```
@@ -256,7 +256,7 @@ Packet packetContent;
 
 void loop()
 {
-    packetContent = gt7Telem.read();
+    packetContent = gt7Telem.readData();
     uint8_t TCSActive = gt7Telem.getFlag(12);
     if (TCSActive) {
     Serial.println("TCS: Active");
